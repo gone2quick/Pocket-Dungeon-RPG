@@ -36,7 +36,11 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-3 font-mono text-xs font-bold">
+        <div class="flex items-center gap-1.5 font-mono text-xs font-bold">
+            <div class="flex items-center gap-1 bg-slate-950 border border-slate-800 px-2 py-1 rounded-lg">
+                <i class="fa-solid fa-star text-violet-400 text-xs"></i>
+                <span id="res-plevel" class="text-violet-300">1</span>
+            </div>
             <div class="flex items-center gap-1 bg-slate-950 border border-slate-800 px-2.5 py-1 rounded-lg">
                 <i class="fa-solid fa-coins text-amber-400 text-xs"></i>
                 <span id="res-gold" class="text-amber-300">0</span>
@@ -101,7 +105,7 @@
             <!-- PARTY COMBAT OVERVIEW -->
             <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 space-y-2">
                 <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold text-slate-300">Active Party (<span id="party-count">1</span>/5)</span>
+                    <span class="text-xs font-bold text-slate-300">Active Party (<span id="party-count">1</span>/<span id="party-max">3</span>)</span>
                     <span id="team-dps" class="text-[10px] font-mono text-emerald-400 font-semibold">Team ATK: 10</span>
                 </div>
                 
@@ -132,7 +136,7 @@
         <section id="tab-heroes" class="space-y-4 hidden">
             <div class="flex justify-between items-center">
                 <h2 class="text-sm font-extrabold text-slate-200 uppercase tracking-wide">Heroes Roster</h2>
-                <span class="text-xs text-slate-400">Max 5 Active in Party</span>
+                <span id="party-limit-text" class="text-xs text-slate-400">Max 3 Active in Party</span>
             </div>
 
             <!-- Hero List Grid -->
@@ -161,7 +165,8 @@
         <section id="tab-inventory" class="space-y-4 hidden">
             <!-- Equipped Gear Slots -->
             <div>
-                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Equipped Items</h3>
+                <div id="gear-hero-select" class="flex gap-2 overflow-x-auto no-scrollbar mb-3"></div>
+                <h3 id="gear-title" class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Equipped Items</h3>
                 <div class="grid grid-cols-2 gap-2">
                     <div id="slot-wep-0" onclick="unequipItem('weapons', 0)" class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 flex items-center justify-center text-xs text-slate-500 min-h-[50px] cursor-pointer">
                         Weapon 1 (Empty)
@@ -210,32 +215,18 @@
 
         <!-- 5. SHOP & RECRUIT TAB -->
         <section id="tab-shop" class="space-y-4 hidden">
-            <!-- Hero Recruitment Altar -->
+            <!-- Hero Summon Altar -->
             <div class="bg-gradient-to-br from-indigo-950 to-purple-950 border border-purple-800/40 rounded-2xl p-4 text-center space-y-3">
                 <div class="w-12 h-12 rounded-full bg-cyan-600/20 border border-cyan-400/40 mx-auto flex items-center justify-center text-cyan-300 text-xl">
                     <i class="fa-solid fa-gem"></i>
                 </div>
                 <div>
-                    <h3 class="font-extrabold text-sm text-slate-100">Magic Gem Altar</h3>
-                    <p class="text-[11px] text-slate-400">1 Magic Gem = 1 Hero Shard (1/10th of a Hero)</p>
-                    <div class="text-xs font-mono font-bold text-cyan-300 mt-1">Current Progress: <span id="hero-shards-count">0</span> / 10 Shards</div>
-                </div>
-                <button onclick="summonHeroShard()" class="w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 font-bold text-xs rounded-xl shadow-lg shadow-cyan-950 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-gem"></i> Roll Gem (1 Magic Gem)
-                </button>
-            </div>
-
-            <!-- Item Shop -->
-            <div class="space-y-2">
-
-                    <i class="fa-solid fa-user-plus"></i>
-                </div>
-                <div>
                     <h3 class="font-extrabold text-sm text-slate-100">Hero Summon Altar</h3>
-                    <p class="text-[11px] text-slate-400">Recruit random Defender, Striker, or Support heroes</p>
+                    <p class="text-[11px] text-slate-400">Recruit a random Defender, Striker, or Support hero</p>
+                    <div class="text-xs font-mono font-bold text-cyan-300 mt-1">Your Gems: <span id="summon-gems">0</span></div>
                 </div>
-                <button onclick="summonHero()" class="w-full py-2.5 bg-purple-600 hover:bg-purple-500 font-bold text-xs rounded-xl shadow-lg shadow-purple-950 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-scroll"></i> Summon Hero (1 Scroll)
+                <button onclick="summonHero()" class="w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 font-bold text-xs rounded-xl shadow-lg shadow-cyan-950 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-gem"></i> Summon Hero (10 Gems)
                 </button>
             </div>
 
@@ -258,11 +249,16 @@
         <section id="tab-quests" class="space-y-3 hidden">
             <div class="flex justify-between items-center">
                 <h2 class="text-sm font-extrabold text-slate-200 uppercase tracking-wide">Gem Bounties & Quests</h2>
-                <span class="text-xs text-cyan-400 font-bold"><i class="fa-solid fa-gem mr-1"></i>Earn Gems</span>
+                <span class="text-xs text-cyan-400 font-bold"><i class="fa-solid fa-clock mr-1"></i>New in <span id="quest-timer">10:00</span></span>
             </div>
             <div id="quests-list" class="space-y-2">
                 <!-- Dynamic quests -->
             </div>
+        </section>
+
+        <!-- 6.5 PLAYER LEVEL TAB -->
+        <section id="tab-level" class="space-y-3 hidden">
+            <div id="level-content" class="space-y-3"></div>
         </section>
 
         <!-- 7. MAP SELECTION TAB -->
@@ -275,36 +271,7 @@
     </main>
 
     <!-- BOTTOM NAVIGATION BAR -->
-    <nav class="bg-slate-900 border-t border-slate-800 grid grid-cols-7 h-16 fixed bottom-0 left-0 right-0 max-w-md mx-auto z-30 text-center">
-        <button onclick="switchTab('battle')" id="nav-battle" class="flex flex-col items-center justify-center text-indigo-400 font-bold">
-            <i class="fa-solid fa-swords text-base"></i>
-            <span class="text-[8px] mt-0.5">Battle</span>
-        </button>
-        <button onclick="switchTab('heroes')" id="nav-heroes" class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-300 font-bold">
-            <i class="fa-solid fa-users text-base"></i>
-            <span class="text-[8px] mt-0.5">Heroes</span>
-        </button>
-        <button onclick="switchTab('evolution')" id="nav-evolution" class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-300 font-bold">
-            <i class="fa-solid fa-dna text-base"></i>
-            <span class="text-[8px] mt-0.5">Evolve</span>
-        </button>
-        <button onclick="switchTab('inventory')" id="nav-inventory" class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-300 font-bold">
-            <i class="fa-solid fa-shield-cat text-base"></i>
-            <span class="text-[8px] mt-0.5">Gear</span>
-        </button>
-        <button onclick="switchTab('forge')" id="nav-forge" class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-300 font-bold">
-            <i class="fa-solid fa-anvil text-base"></i>
-            <span class="text-[8px] mt-0.5">Forge</span>
-        </button>
-        <button onclick="switchTab('shop')" id="nav-shop" class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-300 font-bold">
-            <i class="fa-solid fa-store text-base"></i>
-            <span class="text-[8px] mt-0.5">Shop</span>
-        </button>
-        <button onclick="switchTab('quests')" id="nav-quests" class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-300 font-bold">
-            <i class="fa-solid fa-scroll text-base"></i>
-            <span class="text-[8px] mt-0.5">Quests</span>
-        </button>
-    </nav>
+    <nav id="nav-bar" class="bg-slate-900 border-t border-slate-800 grid grid-cols-8 h-16 fixed bottom-0 left-0 right-0 max-w-md mx-auto z-30 text-center"></nav>
 
     <!-- MODAL FOR ITEM INTERACTIONS -->
     <div id="item-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
@@ -355,9 +322,9 @@
     <script>
         /* ================= GAME STATE & DEFINITIONS ================= */
         const heroArchetypes = {
-            defensive: { name: 'Defender', icon: 'fa-shield', color: '#38bdf8', hp: 120, atk: 8, def: 5 },
-            offensive: { name: 'Striker', icon: 'fa-hand-fist', color: '#f87171', hp: 80, atk: 18, def: 2 },
-            support: { name: 'Support', icon: 'fa-wand-magic-sparkles', color: '#a78bfa', hp: 95, atk: 11, def: 3 }
+            defensive: { name: 'Defender', icon: 'fa-shield', color: '#38bdf8', hp: 40, atk: 4, def: 2 },
+            offensive: { name: 'Striker', icon: 'fa-hand-fist', color: '#f87171', hp: 28, atk: 7, def: 1 },
+            support: { name: 'Support', icon: 'fa-wand-magic-sparkles', color: '#a78bfa', hp: 34, atk: 5, def: 1 }
         };
 
         const itemRarities = {
@@ -367,23 +334,53 @@
         };
 
         const mapZones = [
-            { minLvl: 1, maxLvl: 5, name: 'Lvl 1 - 5 Zone' },
-            { minLvl: 6, maxLvl: 10, name: 'Lvl 6 - 10 Zone' },
-            { minLvl: 11, maxLvl: 15, name: 'Lvl 11 - 15 Zone' },
-            { minLvl: 16, maxLvl: 20, name: 'Lvl 16 - 20 Zone' },
-            { minLvl: 21, maxLvl: 50, name: 'Lvl 21 - 50 Zone' },
-            { minLvl: 51, maxLvl: 100, name: 'Lvl 51 - 100 Zone' }
+            { minLvl: 1, maxLvl: 5, name: 'Lvl 1 - 5 Zone', unlockLvl: 1 },
+            { minLvl: 6, maxLvl: 10, name: 'Lvl 6 - 10 Zone', unlockLvl: 6 },
+            { minLvl: 11, maxLvl: 15, name: 'Lvl 11 - 15 Zone', unlockLvl: 9 },
+            { minLvl: 16, maxLvl: 20, name: 'Lvl 16 - 20 Zone', unlockLvl: 12 },
+            { minLvl: 21, maxLvl: 50, name: 'Lvl 21 - 50 Zone', unlockLvl: 16 },
+            { minLvl: 51, maxLvl: 100, name: 'Lvl 51 - 100 Zone', unlockLvl: 22 }
         ];
+
+        const tabUnlock = { battle: 1, heroes: 1, inventory: 1, quests: 1, level: 1, map: 1, shop: 2, forge: 5, evolution: 20 };
+        const navItems = [
+            ['battle', 'fa-swords', 'Battle'], ['heroes', 'fa-users', 'Heroes'], ['inventory', 'fa-shield-cat', 'Gear'],
+            ['quests', 'fa-scroll', 'Quests'], ['level', 'fa-star', 'Level'], ['shop', 'fa-store', 'Shop'],
+            ['forge', 'fa-anvil', 'Forge'], ['evolution', 'fa-dna', 'Evolve']
+        ];
+        const levelFeatures = [
+            { lvl: 1, text: 'Battle, Heroes, Gear, Quests & Level tabs, Loot Bonus upgrade, 3 party slots' },
+            { lvl: 2, text: 'Shop tab' },
+            { lvl: 3, text: 'Hero EXP Boost upgrade' },
+            { lvl: 4, text: 'Battle Speed upgrade' },
+            { lvl: 5, text: 'Forge tab' },
+            { lvl: 6, text: 'Map: Lvl 6 - 10 Zone' },
+            { lvl: 7, text: '4th party slot' },
+            { lvl: 9, text: 'Map: Lvl 11 - 15 Zone' },
+            { lvl: 10, text: '5th party slot' },
+            { lvl: 12, text: 'Map: Lvl 16 - 20 Zone' },
+            { lvl: 16, text: 'Map: Lvl 21 - 50 Zone' },
+            { lvl: 20, text: 'Evolution tab' },
+            { lvl: 22, text: 'Map: Lvl 51 - 100 Zone' }
+        ];
+        const upgradeDefs = {
+            loot: { name: 'Loot Bonus', desc: '+8% gold & drop chance per rank', icon: 'fa-sack-dollar', color: '#fbbf24', unlock: 1, max: 20, per: 0.08 },
+            heroExp: { name: 'Hero EXP Boost', desc: '+10% hero EXP per rank', icon: 'fa-book', color: '#34d399', unlock: 3, max: 20, per: 0.10 },
+            speed: { name: 'Battle Speed', desc: '+10% battle speed per rank', icon: 'fa-gauge-high', color: '#38bdf8', unlock: 4, max: 10, per: 0.10 }
+        };
 
         const player = {
             gold: 50,
             gems: 10,
-            heroShards: 0,
             materials: 5,
-            unlockedMaxLvl: 5,
             activeZoneIndex: 0,
+            level: 1,
+            exp: 0,
+            points: 0,
+            upgrades: { loot: 0, heroExp: 0, speed: 0 },
+            gearHeroId: null,
+            questRefreshAt: 0,
             inventory: [],
-            equipped: { weapons: [null, null], helmet: null, armor: null },
             party: [],
             quests: [],
             runsCount: 0,
@@ -391,6 +388,12 @@
             runGold: 0,
             currentHp: null
         };
+
+        let currentTab = 'battle';
+        let navKey = '';
+        let resetting = false;
+        const QUEST_MS = 10 * 60 * 1000;
+        const SAVE_KEY = 'pocketDungeonSave_v2';
 
         let currentEnemy = null;
         let isRunning = false;
@@ -405,58 +408,49 @@
         let heroIdCounter = 1;
         function createHero(type = 'defensive') {
             const arch = heroArchetypes[type];
+            const id = heroIdCounter++;
             return {
-                id: heroIdCounter++,
-                name: `${arch.name} ${heroIdCounter}`,
+                id: id,
+                name: `${arch.name} ${id}`,
                 type: type,
                 level: 1,
                 maxLevel: 100,
                 evoLevel: 0,
                 exp: 0,
                 maxExp: 50,
-                inParty: true
+                inParty: true,
+                equipped: { weapons: [null, null], helmet: null, armor: null }
             };
         }
 
         function getHeroStats(hero) {
             const arch = heroArchetypes[hero.type];
-            const levelBonus = (hero.level - 1);
-            const evoMult = 1 + (hero.evoLevel * 0.5);
-            return {
-                maxHp: Math.round((arch.hp + (levelBonus * 6)) * evoMult),
-                atk: Math.round((arch.atk + (levelBonus * 1.5)) * evoMult),
-                def: Math.round((arch.def + (levelBonus * 0.8)) * evoMult)
-            };
+            const lb = hero.level - 1;
+            const evo = 1 + (hero.evoLevel * 0.5);
+            let maxHp = Math.round((arch.hp + lb * 3) * evo);
+            let atk = Math.round((arch.atk + lb * 0.6) * evo);
+            let def = Math.round((arch.def + lb * 0.3) * evo);
+            const g = hero.equipped;
+            g.weapons.forEach(w => { if (w && w.stats) atk += (w.stats.atk || 0) + (w.upgradeLevel || 0); });
+            if (g.helmet && g.helmet.stats) maxHp += (g.helmet.stats.maxHp || 0) + ((g.helmet.upgradeLevel || 0) * 3);
+            if (g.armor && g.armor.stats) def += (g.armor.stats.def || 0) + (g.armor.upgradeLevel || 0);
+            return { maxHp, atk, def };
         }
 
         function getTeamStats() {
-            let totalHp = 0;
-            let totalAtk = 0;
-            let totalDef = 0;
-
-            const activeHeroes = player.party.filter(h => h.inParty);
-            activeHeroes.forEach(h => {
+            let totalHp = 0, totalAtk = 0, totalDef = 0;
+            player.party.filter(h => h.inParty).forEach(h => {
                 const st = getHeroStats(h);
-                totalHp += st.maxHp;
-                totalAtk += st.atk;
-                totalDef += st.def;
+                totalHp += st.maxHp; totalAtk += st.atk; totalDef += st.def;
             });
-
-            // Gear bonuses
-            player.equipped.weapons.forEach(w => {
-                if (w && w.stats) {
-                    totalAtk += (w.stats.atk || 0) + (w.upgradeLevel || 0);
-                }
-            });
-            if (player.equipped.helmet && player.equipped.helmet.stats) {
-                totalHp += (player.equipped.helmet.stats.maxHp || 0) + ((player.equipped.helmet.upgradeLevel || 0) * 3);
-            }
-            if (player.equipped.armor && player.equipped.armor.stats) {
-                totalDef += (player.equipped.armor.stats.def || 0) + (player.equipped.armor.upgradeLevel || 0);
-            }
-
             return { maxHp: Math.max(10, totalHp), atk: Math.max(1, totalAtk), def: Math.max(0, totalDef) };
         }
+
+        function partyLimit() { return player.level >= 10 ? 5 : (player.level >= 7 ? 4 : 3); }
+        function getGearHero() { return player.party.find(h => h.id === player.gearHeroId) || player.party[0]; }
+        function selectGearHero(id) { player.gearHeroId = id; updateUI(); }
+        function getMult(k) { return 1 + player.upgrades[k] * upgradeDefs[k].per; }
+        function getTickMs() { return Math.round(1000 / getMult('speed')); }
 
         /* ================= ENEMY & COMBAT ================= */
         function spawnEnemy(forceNew = false) {
@@ -468,8 +462,8 @@
             const weight = Math.pow(Math.random(), 2.2);
             const lvl = Math.max(minL, Math.min(maxL, Math.floor(minL + (weight * (maxL - minL + 1)))));
 
-            const hp = 15 + (lvl * 6);
-            const atk = 3 + Math.floor(lvl * 1.2);
+            const hp = 30 + (lvl * 10);
+            const atk = 3 + Math.floor(lvl * 0.9);
             const monsterTypes = [
                 { name: 'Goblin', icon: 'fa-spaghetti-monster-flying' },
                 { name: 'Orc Warrior', icon: 'fa-skull-crossbones' },
@@ -521,7 +515,7 @@
 
             logMessage("Started AFK dungeon run!");
             if (!combatInterval) {
-                combatInterval = setInterval(combatTurn, 1000);
+                combatInterval = setInterval(combatTurn, getTickMs());
             }
         }
 
@@ -551,17 +545,25 @@
 
             if (currentEnemy.hp <= 0) {
                 currentEnemy.hp = 0;
+                const loot = getMult('loot');
+                const gold = Math.round(currentEnemy.goldReward * loot);
                 player.runKills++;
-                player.gold += currentEnemy.goldReward;
-                player.runGold += currentEnemy.goldReward;
+                player.gold += gold;
+                player.runGold += gold;
+                logMessage(`Slain ${currentEnemy.name}! Gained ${gold}g.`);
+                checkQuestProgress('gold', gold);
 
-                logMessage(`Slain ${currentEnemy.name}! Gained ${currentEnemy.goldReward}g.`);
+                if (Math.random() < 0.10 * loot) { player.materials++; logMessage('Found 1 Forge Ore!'); }
+                if (Math.random() < 0.05 * loot) {
+                    const drop = generateRandomItem();
+                    player.inventory.push(drop);
+                    logMessage(`Dropped ${drop.name}!`);
+                }
 
-                // Distribute EXP
+                const expMult = getMult('heroExp');
                 player.party.filter(h => h.inParty).forEach(h => {
-                    const evoExpMult = Math.pow(1.5, h.evoLevel);
-                    h.exp += Math.round(currentEnemy.expReward * evoExpMult);
-                    if (h.exp >= h.maxExp && h.level < h.maxLevel) {
+                    h.exp += Math.round(currentEnemy.expReward * Math.pow(1.5, h.evoLevel) * expMult);
+                    while (h.exp >= h.maxExp && h.level < h.maxLevel) {
                         h.level++;
                         h.exp -= h.maxExp;
                         h.maxExp = Math.round(h.maxExp * 1.25);
@@ -570,6 +572,8 @@
                     }
                 });
 
+                const t = getTeamStats();
+                player.currentHp = Math.min(t.maxHp, player.currentHp + Math.ceil(t.maxHp * 0.08));
                 checkQuestProgress('kill', 1);
                 spawnEnemy(true);
                 updateUI();
@@ -662,7 +666,7 @@
                 `;
             } else if (source === 'inventory') {
                 actions.innerHTML = `
-                    <button onclick="equipModalItem()" class="py-2 bg-indigo-600 hover:bg-indigo-500 font-bold text-xs text-white rounded-xl">Equip</button>
+                    <button onclick="equipModalItem()" class="py-2 bg-indigo-600 hover:bg-indigo-500 font-bold text-xs text-white rounded-xl">Equip on ${(getGearHero() || {}).name || 'Hero'}</button>
                     <button onclick="sellModalItem()" class="py-2 bg-rose-600 hover:bg-rose-500 font-bold text-xs text-white rounded-xl">Sell (${Math.round(item.value * 0.5)}g)</button>
                 `;
             }
@@ -684,23 +688,24 @@
 
         function equipModalItem() {
             if (!activeModalItem) return;
+            const hero = getGearHero();
+            if (!hero) return;
             const item = activeModalItem;
             player.inventory = player.inventory.filter(i => i.id !== item.id);
+            const eq = hero.equipped;
 
             if (item.type === 'weapons') {
-                if (!player.equipped.weapons[0]) {
-                    player.equipped.weapons[0] = item;
-                } else if (!player.equipped.weapons[1]) {
-                    player.equipped.weapons[1] = item;
+                if (!eq.weapons[0]) {
+                    eq.weapons[0] = item;
+                } else if (!eq.weapons[1]) {
+                    eq.weapons[1] = item;
                 } else {
-                    player.inventory.push(player.equipped.weapons[0]);
-                    player.equipped.weapons[0] = item;
+                    player.inventory.push(eq.weapons[0]);
+                    eq.weapons[0] = item;
                 }
             } else {
-                if (player.equipped[item.type]) {
-                    player.inventory.push(player.equipped[item.type]);
-                }
-                player.equipped[item.type] = item;
+                if (eq[item.type]) player.inventory.push(eq[item.type]);
+                eq[item.type] = item;
             }
 
             closeModal();
@@ -717,15 +722,16 @@
         }
 
         function unequipItem(slotType, index = null) {
+            const hero = getGearHero();
+            if (!hero) return;
             let item = null;
-            if (slotType === 'weapons' && index !== null) {
-                item = player.equipped.weapons[index];
-                player.equipped.weapons[index] = null;
+            if (slotType === 'weapons') {
+                item = hero.equipped.weapons[index];
+                hero.equipped.weapons[index] = null;
             } else {
-                item = player.equipped[slotType];
-                player.equipped[slotType] = null;
+                item = hero.equipped[slotType];
+                hero.equipped[slotType] = null;
             }
-
             if (item) {
                 player.inventory.push(item);
                 recalculateHealthOnStatChange();
@@ -750,6 +756,7 @@
             hero.maxExp = 50;
 
             // Consume duplicate hero
+            dupHero.equipped.weapons.concat([dupHero.equipped.helmet, dupHero.equipped.armor]).forEach(i => { if (i) player.inventory.push(i); });
             player.party = player.party.filter(h => h.id !== dupHero.id);
 
             recalculateHealthOnStatChange();
@@ -765,43 +772,141 @@
             }
         }
 
-        function summonHeroShard() {
-            if (player.gems < 1) return;
-            player.gems--;
-            player.heroShards++;
+        function summonHero() {
+            if (player.gems < 10) return;
+            player.gems -= 10;
+            const types = ['defensive', 'offensive', 'support'];
+            const h = createHero(types[Math.floor(Math.random() * types.length)]);
+            h.inParty = player.party.filter(x => x.inParty).length < partyLimit();
+            player.party.push(h);
+            logMessage(`Summoned ${h.name}!`);
+            showToast(`Summoned ${h.name}!` + (h.inParty ? '' : ' (in reserve, party full)'));
+            recalculateHealthOnStatChange();
+            updateUI();
+        }
 
-            if (player.heroShards >= 10) {
-                player.heroShards -= 10;
-                const types = ['defensive', 'offensive', 'support'];
-                const newHero = createHero(types[Math.floor(Math.random() * types.length)]);
-                player.party.push(newHero);
-                logMessage(`10/10 Shards completed! Recruited ${newHero.name}!`);
-            } else {
-                logMessage(`Gained 1 Hero Shard! (${player.heroShards}/10)`);
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.className = 'fixed top-16 left-1/2 -translate-x-1/2 z-[60] bg-violet-600 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-lg max-w-xs text-center pointer-events-none';
+            t.innerText = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 3200);
+        }
+
+        /* ---- Player levels ---- */
+        function playerExpNeeded(l) { return Math.round(40 * Math.pow(l, 1.4)); }
+
+        function addPlayerExp(n) {
+            player.exp += n;
+            while (player.exp >= playerExpNeeded(player.level)) {
+                player.exp -= playerExpNeeded(player.level);
+                player.level++;
+                player.points++;
+                const f = levelFeatures.filter(x => x.lvl === player.level).map(x => x.text).join(', ');
+                showToast(`Player Level ${player.level}!` + (f ? ` Unlocked: ${f}` : ' +1 point'));
+                logMessage(`Player reached Level ${player.level}!`);
+            }
+        }
+
+        function buyUpgrade(key) {
+            const d = upgradeDefs[key];
+            if (player.level < d.unlock || player.points < 1 || player.upgrades[key] >= d.max) return;
+            player.points--;
+            player.upgrades[key]++;
+            if (key === 'speed' && isRunning) {
+                clearInterval(combatInterval);
+                combatInterval = setInterval(combatTurn, getTickMs());
             }
             updateUI();
         }
 
+        /* ---- Quests ---- */
+        const questTiers = [
+            { tier: 'Easy', gems: 1, pct: 0.25 },
+            { tier: 'Medium', gems: 2, pct: 0.35 },
+            { tier: 'Hard', gems: 3, pct: 0.50 }
+        ];
+        const questTypes = {
+            kill: { text: n => `Defeat ${n} Enemies`, targets: [8, 15, 25] },
+            level: { text: n => `Level up Heroes ${n} Times`, targets: [2, 3, 5] },
+            gold: { text: n => `Earn ${n} Gold`, targets: [80, 200, 400] }
+        };
+
         function generateQuests() {
-            player.quests = [
-                { id: 1, text: 'Defeat 5 Enemies', target: 5, current: 0, reward: 2, type: 'kill' },
-                { id: 2, text: 'Level up Heroes 3 Times', target: 3, current: 0, reward: 3, type: 'level' }
-            ];
+            player.quests = Object.keys(questTypes).map((type, i) => {
+                const ti = Math.floor(Math.random() * questTiers.length);
+                const tier = questTiers[ti];
+                const target = questTypes[type].targets[ti];
+                return {
+                    id: Date.now() + i, type, target, current: 0,
+                    text: questTypes[type].text(target),
+                    tier: tier.tier, reward: tier.gems,
+                    exp: Math.round(playerExpNeeded(player.level) * tier.pct)
+                };
+            });
+            player.questRefreshAt = Date.now() + QUEST_MS;
         }
 
         function checkQuestProgress(type, amt) {
             player.quests.forEach(q => {
                 if (q.type === type && q.current < q.target) {
-                    q.current += amt;
+                    q.current = Math.min(q.target, q.current + amt);
                     if (q.current >= q.target) {
                         player.gems += q.reward;
-                        q.current = q.target;
+                        logMessage(`Quest complete: ${q.text} (+${q.reward} gems, +${q.exp} player EXP)`);
+                        addPlayerExp(q.exp);
                     }
                 }
             });
         }
 
-        /* ================= UI RENDERING & TABS ================= */
+        function questTick() {
+            const left = player.questRefreshAt - Date.now();
+            if (left <= 0) {
+                generateQuests();
+                logMessage('Quests refreshed!');
+                showToast('New quests available!');
+                updateUI();
+                return;
+            }
+            const el = document.getElementById('quest-timer');
+            if (el) {
+                const sec = Math.ceil(left / 1000);
+                el.innerText = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+            }
+        }
+
+        /* ---- Saving ---- */
+        function saveGame() {
+            if (resetting) return;
+            try {
+                localStorage.setItem(SAVE_KEY, JSON.stringify({ player, heroIdCounter, shopInventory, rerollCost }));
+            } catch (e) {}
+        }
+
+        function loadGame() {
+            try {
+                const raw = localStorage.getItem(SAVE_KEY);
+                if (!raw) return false;
+                const d = JSON.parse(raw);
+                if (!d.player || !d.player.party || d.player.party.length === 0) return false;
+                Object.assign(player, d.player);
+                player.upgrades = Object.assign({ loot: 0, heroExp: 0, speed: 0 }, d.player.upgrades);
+                heroIdCounter = d.heroIdCounter || (player.party.length + 1);
+                shopInventory = d.shopInventory || [];
+                rerollCost = d.rerollCost || 25;
+                return true;
+            } catch (e) { return false; }
+        }
+
+        function resetSave() {
+            if (!confirm('Delete your save and start over?')) return;
+            resetting = true;
+            try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+            location.reload();
+        }
+
+/* ================= UI RENDERING & TABS ================= */
         function updateUI() {
             const team = getTeamStats();
             if (isNaN(player.currentHp) || player.currentHp === null) player.currentHp = team.maxHp;
@@ -809,7 +914,8 @@
             // Header Resource Counters
             document.getElementById('res-gold').innerText = player.gold;
             document.getElementById('res-gems').innerText = player.gems;
-            document.getElementById('hero-shards-count').innerText = player.heroShards;
+            document.getElementById('res-plevel').innerText = player.level;
+            const sg = document.getElementById('summon-gems'); if (sg) sg.innerText = player.gems;
 
             // Battle Display
             const zone = mapZones[player.activeZoneIndex];
@@ -827,6 +933,8 @@
             // Party Overview
             const activeHeroes = player.party.filter(h => h.inParty);
             document.getElementById('party-count').innerText = activeHeroes.length;
+            document.getElementById('party-max').innerText = partyLimit();
+            document.getElementById('party-limit-text').innerText = `Max ${partyLimit()} Active in Party`;
             document.getElementById('team-dps').innerText = `Team ATK: ${team.atk}`;
             document.getElementById('player-hp-text').innerText = `${player.currentHp} / ${team.maxHp}`;
             document.getElementById('player-hp-bar').style.width = `${Math.max(0, (player.currentHp / team.maxHp) * 100)}%`;
@@ -851,6 +959,9 @@
             renderMapZones();
             renderForgeList();
             renderQuests();
+            renderGearHeroSelect();
+            if (currentTab === 'level') renderLevelTab();
+            renderNav();
         }
 
         function getItemStatsSummary(item) {
@@ -863,38 +974,42 @@
             return parts.length > 0 ? parts.join(' | ') : 'Base Gear';
         }
 
+        function renderGearHeroSelect() {
+            const box = document.getElementById('gear-hero-select');
+            const sel = getGearHero();
+            box.innerHTML = '';
+            player.party.forEach(h => {
+                const arch = heroArchetypes[h.type];
+                const b = document.createElement('button');
+                const on = sel && sel.id === h.id;
+                b.className = `shrink-0 px-2.5 py-1.5 rounded-lg border text-[10px] font-bold flex items-center gap-1.5 ${on ? 'bg-indigo-600/20 border-indigo-500 text-indigo-300' : 'bg-slate-900 border-slate-800 text-slate-400'}`;
+                b.onclick = () => selectGearHero(h.id);
+                b.innerHTML = `<i class="fa-solid ${arch.icon}" style="color:${arch.color}"></i>${h.name}`;
+                box.appendChild(b);
+            });
+        }
+
         function renderEquippedSlots() {
-            for (let i = 0; i < 2; i++) {
-                const slot = document.getElementById(`slot-wep-${i}`);
-                const wep = player.equipped.weapons[i];
-                if (wep) {
-                    slot.className = `bg-slate-900 border ${wep.rarity.bgClass} rounded-xl p-2 flex items-center justify-between cursor-pointer`;
-                    slot.innerHTML = `<span class="text-xs font-bold" style="color:${wep.rarity.color}">${wep.name}</span><span class="text-[9px] text-slate-400">${getItemStatsSummary(wep)}</span>`;
+            const hero = getGearHero();
+            if (!hero) return;
+            const st = getHeroStats(hero);
+            document.getElementById('gear-title').innerText = `${hero.name}: HP ${st.maxHp} | ATK ${st.atk} | DEF ${st.def}`;
+            const slots = [
+                ['slot-wep-0', hero.equipped.weapons[0], 'Weapon 1'],
+                ['slot-wep-1', hero.equipped.weapons[1], 'Weapon 2'],
+                ['slot-helmet', hero.equipped.helmet, 'Helmet'],
+                ['slot-armor', hero.equipped.armor, 'Armor']
+            ];
+            slots.forEach(([id, it, label]) => {
+                const el = document.getElementById(id);
+                if (it) {
+                    el.className = `bg-slate-900 border ${it.rarity.bgClass} rounded-xl p-2 flex items-center justify-between cursor-pointer`;
+                    el.innerHTML = `<span class="text-xs font-bold" style="color:${it.rarity.color}">${it.name}</span><span class="text-[9px] text-slate-400">${getItemStatsSummary(it)}</span>`;
                 } else {
-                    slot.className = "bg-slate-900 border border-dashed border-slate-800 rounded-xl p-2 flex items-center justify-center text-xs text-slate-600";
-                    slot.innerHTML = `Weapon ${i+1} (Empty)`;
+                    el.className = "bg-slate-900 border border-dashed border-slate-800 rounded-xl p-2 flex items-center justify-center text-xs text-slate-600";
+                    el.innerHTML = `${label} (Empty)`;
                 }
-            }
-
-            const slotHelmet = document.getElementById('slot-helmet');
-            if (player.equipped.helmet) {
-                const h = player.equipped.helmet;
-                slotHelmet.className = `bg-slate-900 border ${h.rarity.bgClass} rounded-xl p-2 flex items-center justify-between cursor-pointer`;
-                slotHelmet.innerHTML = `<span class="text-xs font-bold" style="color:${h.rarity.color}">${h.name}</span><span class="text-[9px] text-slate-400">${getItemStatsSummary(h)}</span>`;
-            } else {
-                slotHelmet.className = "bg-slate-900 border border-dashed border-slate-800 rounded-xl p-2 flex items-center justify-center text-xs text-slate-600";
-                slotHelmet.innerHTML = `Helmet (Empty)`;
-            }
-
-            const slotArmor = document.getElementById('slot-armor');
-            if (player.equipped.armor) {
-                const a = player.equipped.armor;
-                slotArmor.className = `bg-slate-900 border ${a.rarity.bgClass} rounded-xl p-2 flex items-center justify-between cursor-pointer`;
-                slotArmor.innerHTML = `<span class="text-xs font-bold" style="color:${a.rarity.color}">${a.name}</span><span class="text-[9px] text-slate-400">${getItemStatsSummary(a)}</span>`;
-            } else {
-                slotArmor.className = "bg-slate-900 border border-dashed border-slate-800 rounded-xl p-2 flex items-center justify-center text-xs text-slate-600";
-                slotArmor.innerHTML = `Armor (Empty)`;
-            }
+            });
         }
 
         function renderInventoryGrid() {
@@ -1011,7 +1126,7 @@
             const hero = player.party.find(h => h.id === heroId);
             if (!hero) return;
             const activeCount = player.party.filter(h => h.inParty).length;
-            if (!hero.inParty && activeCount >= 5) return;
+            if (!hero.inParty && activeCount >= partyLimit()) return;
             hero.inParty = !hero.inParty;
             
             recalculateHealthOnStatChange();
@@ -1044,7 +1159,7 @@
             const list = document.getElementById('zones-list');
             list.innerHTML = '';
             mapZones.forEach((zone, idx) => {
-                const isUnlocked = zone.minLvl <= player.unlockedMaxLvl;
+                const isUnlocked = zone.unlockLvl <= player.level;
                 const isSelected = player.activeZoneIndex === idx;
                 const el = document.createElement('div');
                 el.className = `bg-slate-900 border ${isSelected ? 'border-indigo-500 bg-indigo-950/20' : 'border-slate-800'} rounded-xl p-3 flex justify-between items-center ${isUnlocked ? 'cursor-pointer' : 'opacity-50'}`;
@@ -1054,7 +1169,7 @@
                         <div class="text-xs font-extrabold ${isSelected ? 'text-indigo-300' : 'text-slate-200'}">${zone.name}</div>
                         <div class="text-[10px] text-slate-400 font-mono">Monsters Lvl ${zone.minLvl} - ${zone.maxLvl}</div>
                     </div>
-                    ${isSelected ? '<span class="text-xs font-bold text-indigo-400"><i class="fa-solid fa-check"></i> Active</span>' : (isUnlocked ? '<span class="text-xs text-slate-500">Select</span>' : '<i class="fa-solid fa-lock text-slate-600"></i>')}
+                    ${isSelected ? '<span class="text-xs font-bold text-indigo-400"><i class="fa-solid fa-check"></i> Active</span>' : (isUnlocked ? '<span class="text-xs text-slate-500">Select</span>' : `<span class="text-[10px] text-slate-500 font-mono"><i class="fa-solid fa-lock mr-1"></i>Player Lv ${zone.unlockLvl}</span>`)}
                 `;
                 list.appendChild(el);
             });
@@ -1097,35 +1212,105 @@
             const list = document.getElementById('quests-list');
             list.innerHTML = '';
             player.quests.forEach(q => {
-                const isComplete = q.current >= q.target;
+                const done = q.current >= q.target;
+                const pct = Math.min(100, (q.current / q.target) * 100);
                 const el = document.createElement('div');
-                el.className = `bg-slate-900 border ${isComplete ? 'border-cyan-600/50' : 'border-slate-800'} rounded-xl p-3 flex justify-between items-center`;
+                el.className = `bg-slate-900 border ${done ? 'border-cyan-600/50' : 'border-slate-800'} rounded-xl p-3 space-y-2`;
                 el.innerHTML = `
-                    <div>
-                        <div class="text-xs font-bold text-slate-200">${q.text}</div>
-                        <div class="text-[10px] text-slate-400 font-mono mt-0.5">${q.current} / ${q.target}</div>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="text-xs font-bold text-slate-200">${q.text}</div>
+                            <div class="text-[10px] text-slate-500 font-mono">${q.tier}</div>
+                        </div>
+                        <span class="text-[10px] font-bold font-mono text-right ${done ? 'text-cyan-300' : 'text-cyan-400'}">
+                            ${done ? 'Completed!' : `+${q.reward} <i class="fa-solid fa-gem"></i><br><span class="text-violet-300">+${q.exp} EXP</span>`}
+                        </span>
                     </div>
-                    <span class="text-xs font-bold ${isComplete ? 'text-cyan-300 bg-cyan-950 border border-cyan-600/40 px-2 py-1 rounded-lg' : 'text-cyan-400'} font-mono">
-                        ${isComplete ? 'Completed!' : `+${q.reward} Gem`}
-                    </span>
+                    <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
+                        <div class="${done ? 'bg-cyan-400' : 'bg-indigo-500'} h-full" style="width:${pct}%"></div>
+                    </div>
+                    <div class="text-[10px] text-slate-400 font-mono">${q.current} / ${q.target}</div>
                 `;
                 list.appendChild(el);
             });
         }
 
-        function switchTab(tabId) {
-            ['battle', 'heroes', 'evolution', 'inventory', 'forge', 'shop', 'quests', 'map'].forEach(t => {
-                const sec = document.getElementById(`tab-${t}`);
-                if (sec) sec.classList.add('hidden');
-                const nav = document.getElementById(`nav-${t}`);
-                if (nav) nav.className = "flex flex-col items-center justify-center text-slate-500 font-bold";
+        function renderLevelTab() {
+            const need = playerExpNeeded(player.level);
+            const pct = Math.min(100, (player.exp / need) * 100);
+            let h = `
+                <div class="bg-gradient-to-br from-violet-950 to-slate-900 border border-violet-800/40 rounded-2xl p-4 space-y-2">
+                    <div class="flex justify-between items-center">
+                        <div class="text-sm font-extrabold text-slate-100">Player Level ${player.level}</div>
+                        <div class="text-xs font-mono font-bold text-violet-300">${player.points} Point${player.points === 1 ? '' : 's'}</div>
+                    </div>
+                    <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden border border-slate-800">
+                        <div class="bg-gradient-to-r from-violet-600 to-fuchsia-400 h-full" style="width:${pct}%"></div>
+                    </div>
+                    <div class="text-[10px] font-mono text-slate-400 flex justify-between"><span>EXP</span><span>${player.exp} / ${need}</span></div>
+                    <div class="text-[10px] text-slate-400">Finish quests to earn Player EXP. Every level gives 1 upgrade point.</div>
+                </div>
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Upgrades</h3>`;
+            Object.keys(upgradeDefs).forEach(k => {
+                const d = upgradeDefs[k];
+                const rank = player.upgrades[k];
+                const locked = player.level < d.unlock;
+                const maxed = rank >= d.max;
+                const can = !locked && !maxed && player.points > 0;
+                h += `
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex items-center justify-between gap-2 ${locked ? 'opacity-50' : ''}">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid ${d.icon} text-base" style="color:${d.color}"></i>
+                        <div>
+                            <div class="text-xs font-bold text-slate-200">${d.name} <span class="text-[10px] font-mono text-slate-400">${rank}/${d.max}</span></div>
+                            <div class="text-[10px] text-slate-400">${d.desc}</div>
+                            <div class="text-[10px] font-mono text-emerald-400">Current: x${getMult(k).toFixed(2)}</div>
+                        </div>
+                    </div>
+                    <button ${can ? `onclick="buyUpgrade('${k}')"` : 'disabled'} class="shrink-0 py-1.5 px-3 text-xs font-bold rounded-lg ${can ? 'bg-violet-600 hover:bg-violet-500 text-white' : 'bg-slate-800 text-slate-500'}">
+                        ${locked ? `Lv ${d.unlock}` : (maxed ? 'MAX' : '1 pt')}
+                    </button>
+                </div>`;
             });
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            const activeNav = document.getElementById(`nav-${tabId}`);
-            if (activeNav) activeNav.className = "flex flex-col items-center justify-center text-indigo-400 font-bold";
+            h += `<h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider pt-1">Level Rewards</h3><div class="bg-slate-900 border border-slate-800 rounded-xl p-3 space-y-1.5">`;
+            levelFeatures.forEach(f => {
+                const got = player.level >= f.lvl;
+                h += `<div class="flex gap-2 text-[11px] ${got ? 'text-slate-200' : 'text-slate-500'}"><span class="font-mono w-10 shrink-0 ${got ? 'text-emerald-400' : ''}"><i class="fa-solid ${got ? 'fa-check' : 'fa-lock'} mr-1"></i>${f.lvl}</span><span>${f.text}</span></div>`;
+            });
+            h += `</div><button onclick="resetSave()" class="w-full py-2 text-[10px] font-bold text-rose-400 border border-rose-900/50 rounded-lg">Reset Save Data</button>`;
+            document.getElementById('level-content').innerHTML = h;
         }
 
-        function logMessage(msg) {
+        function renderNav(force) {
+            const key = player.level + '|' + currentTab;
+            if (!force && key === navKey) return;
+            navKey = key;
+            const nav = document.getElementById('nav-bar');
+            nav.innerHTML = '';
+            navItems.forEach(([id, icon, label]) => {
+                const locked = tabUnlock[id] > player.level;
+                const b = document.createElement('button');
+                b.id = `nav-${id}`;
+                b.className = `flex flex-col items-center justify-center font-bold ${locked ? 'text-slate-700' : (currentTab === id ? 'text-indigo-400' : 'text-slate-500 hover:text-slate-300')}`;
+                if (!locked) b.onclick = () => switchTab(id);
+                b.innerHTML = `<i class="fa-solid ${locked ? 'fa-lock' : icon} text-base"></i><span class="text-[8px] mt-0.5">${locked ? 'Lv ' + tabUnlock[id] : label}</span>`;
+                nav.appendChild(b);
+            });
+        }
+
+        function switchTab(tabId) {
+            if ((tabUnlock[tabId] || 1) > player.level) return;
+            currentTab = tabId;
+            ['battle', 'heroes', 'evolution', 'inventory', 'forge', 'shop', 'quests', 'level', 'map'].forEach(t => {
+                const sec = document.getElementById(`tab-${t}`);
+                if (sec) sec.classList.add('hidden');
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            if (tabId === 'level') renderLevelTab();
+            renderNav(true);
+        }
+
+function logMessage(msg) {
             const log = document.getElementById('combat-log');
             if (!log) return;
             const entry = document.createElement('div');
@@ -1146,21 +1331,27 @@
 
         /* ================= INITIALIZATION ================= */
         window.onload = function() {
-            // Initial starter heroes
-            player.party.push(createHero('defensive'));
-            player.party.push(createHero('offensive'));
-
-            // Initial starter item
-            player.inventory.push(generateRandomItem());
-            shopInventory = [generateRandomItem(), generateRandomItem(), generateRandomItem(), generateRandomItem()];
-
-            generateQuests();
+            if (!loadGame()) {
+                player.party.push(createHero('defensive'));
+                player.party.push(createHero('offensive'));
+                player.inventory.push(generateRandomItem());
+                shopInventory = [generateRandomItem(), generateRandomItem(), generateRandomItem(), generateRandomItem()];
+            }
+            if (!player.quests || player.quests.length !== 3 || player.questRefreshAt <= Date.now()) generateQuests();
             spawnEnemy(true);
 
             const team = getTeamStats();
-            player.currentHp = team.maxHp;
+            if (player.currentHp === null || isNaN(player.currentHp) || player.currentHp <= 0 || player.currentHp > team.maxHp) {
+                player.currentHp = team.maxHp;
+            }
 
+            switchTab('battle');
             updateUI();
+            setInterval(questTick, 1000);
+            setInterval(saveGame, 5000);
+            window.addEventListener('beforeunload', saveGame);
+            document.addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); });
+            saveGame();
         };
     </script>
 </body>
